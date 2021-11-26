@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>X-chat</title>
+    <!-- bootswatch style  -->
+    <link
+      rel="stylesheet"
+      href="https://bootswatch.com/5/cerulean/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">X-chat</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarColor03"
+          aria-controls="navbarColor03"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarColor03">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#"
+                >Home
+                <span class="visually-hidden">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Pricing</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                data-bs-toggle="dropdown"
+                href="#"
+                role="button"
+                aria-haspopup="true"
+                aria-expanded="false"
+                >Dropdown</a
+              >
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <a class="dropdown-item" href="#">Something else here</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Separated link</a>
+              </div>
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input
+              class="form-control me-sm-2"
+              type="text"
+              placeholder="Search"
+            />
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit">
+              Search
+            </button>
+          </form>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <h1>X-chat</h1>
+
+      <div class="row">
+        <div class="col-md-4">
+          <form action="">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control message"
+                placeholder="Message"
+                aria-label="Message"
+                aria-describedby="button-addon2"
+              />
+              <button
+                onclick="sendMessage()"
+                class="btn btn-sm btn-primary"
+                type="button"
+                id="button-addon2"
+              >
+                Send
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-8">
+          <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+              <div class="card border-primary mb-3" style="max-width: 20rem">
+                <div class="card-header">Broadcasted message</div>
+                <div class="card-body">
+                  <div class="displayMessage"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- // Script  -->
+    <!-- To coonect client with socket io  -->
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js"></script>
+    <!-- query select cdn  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js"></script>
+    <script>
+      // Get username and room from URL
+      //   const { username, room1 } = Qs.parse(location.search, {
+      //     ignoreQueryPrefix: true,
+      //   });
+      // Join chat room
+      const username = "Joseph";
+      const room = "Hip";
+      // Start create connection to socket io
+      const socket = io("http://localhost:4000/");
+
+      // use socket variable to emmit and receive all different we created in our socket server
+      // One of the event we created is connection
+
+      // Connect client to socket io server
+      socket.on("connection");
+      socket.emit("joinRoom", { username, room });
+
+      // Output message to DOM
+      function outputMessage(data) {
+        const div = document.createElement("div");
+        div.classList.add("alert-info");
+        div.classList.add("alert");
+        const p = document.createElement("p");
+        p.classList.add("meta");
+        p.innerText = data.username;
+        p.innerHTML += `<span> ${data.time}</span>`;
+        div.appendChild(p);
+        const para = document.createElement("p");
+        para.classList.add("text");
+        para.innerText = data.text;
+        div.appendChild(para);
+        document.querySelector(".displayMessage").appendChild(div);
+      }
+
+      // Message from server
+      socket.on("message", (data) => {
+        console.log(data);
+        outputMessage(data);
+      });
+
+      //   Sending message to server
+      const sendMessage = () => {
+        const messageInput = document.querySelector(".message");
+        const message = messageInput.value;
+
+        socket.emit("message", message);
+      };
+    </script>
+  </body>
+</html>
